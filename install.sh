@@ -67,22 +67,22 @@ esac
 remove_bashcomments_emptylines ${DEPLISTFILE} ./cache/dependencies_stripped.conf
 readarray -t pkglist < ./cache/dependencies_stripped.conf
 
-# Use yay. Because paru does not support cleanbuild.
+# Use paru. Because paru does not support cleanbuild.
 # Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
-if ! command -v yay >/dev/null 2>&1;then
-  echo -e "\e[33m[$0]: \"yay\" not found.\e[0m"
-  showfun install-yay
-  v install-yay
+if ! command -v paru >/dev/null 2>&1;then
+  echo -e "\e[33m[$0]: \"paru\" not found.\e[0m"
+  showfun install-paru
+  v install-paru
 fi
 
 # Install extra packages from dependencies.conf as declared by the user
 if (( ${#pkglist[@]} != 0 )); then
 	if $ask; then
 		# execute per element of the array $pkglist
-		for i in "${pkglist[@]}";do v yay -S --needed $i;done
+		for i in "${pkglist[@]}";do v paru -S --needed $i;done
 	else
 		# execute for all elements of the array $pkglist in one line
-		v yay -S --needed --noconfirm ${pkglist[*]}
+		v paru -S --needed --noconfirm ${pkglist[*]}
 	fi
 fi
 
@@ -90,7 +90,7 @@ showfun handle-deprecated-dependencies
 v handle-deprecated-dependencies
 
 # https://github.com/end-4/dots-hyprland/issues/581
-# yay -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
+# paru -Bi is kinda hit or miss, instead cd into the relevant directory and manually source and install deps
 install-local-pkgbuild() {
 	local location=$1
 	local installflags=$2
@@ -98,7 +98,7 @@ install-local-pkgbuild() {
 	x pushd $location
 
 	source ./PKGBUILD
-	x yay -S $installflags --asdeps "${depends[@]}"
+	x paru -S $installflags --asdeps "${depends[@]}"
 	x makepkg -Asi --noconfirm
 
 	x popd
